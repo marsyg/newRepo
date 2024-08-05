@@ -1,0 +1,16 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "hello.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Maaz",
+  "license": "ISC",
+  "dependencies": {
+    "dot": "^1.1.3",
+    "env": "^0.0.2",
+    "express": "^4.19.2"
+  }
+}
