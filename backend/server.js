@@ -15,15 +15,33 @@ mongoose
 	});
 
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+	cors: {
+		origin: "http://localhost:5173",
+    method: ["GET", "POST"],
+    credentials : true
+	},
+});
 
 io.on("connection", (socket) => {
 	console.log("connected to websocket");
-
+	console.log("id", socket.id)
+		socket.on("joinRoom", (roomId) => {
+			socket.join(roomId);
+		});
+  socket.emit("welcome", "Welcome from the server");
+	
+	socket.on('joinRoom', (roomId) => { 
+		socket.join(roomId);
+		socket.on("message", ({ Message, RoomId }) => {
+			console.log(`from backend ${Message} and roomI ${RoomId} `);
+			socket.broadcast.emit("receiveMessage", Message);
+		});
+	})
 	socket.on("sendMessage", async (data) => {
 		console.log("Received data:", data);
     const { text, senderId, recipientId } = data.data;
-
+    
 		
 		console.log(
 			`Text: ${text}, SenderId: ${senderId}, RecipientId: ${recipientId}`
@@ -38,6 +56,7 @@ io.on("connection", (socket) => {
 			const message = new Message({
 				text: text,
 				sender: senderId,
+				recipient: recipientId,
 			});
 
 			await message.save();
@@ -49,13 +68,13 @@ io.on("connection", (socket) => {
 		}
 	});
 
-	socket.on("message", (message) => {
-		console.log(`Received: ${message}`);
+	// socket.on("message", (message) => {
+	// 	console.log(`Received: ${message}`);
 
-		const response = `Data received: ${message}`;
-		console.log(`Sending response: ${response}`);
-		io.emit("data", response);
-	});
+	// 	const response = `Data received: ${message}`;
+	// 	console.log(`Sending response: ${response}`);
+	// 	io.emit("data", response);
+	// });
 
 	socket.on("disconnect", () => {
 		console.log("Client disconnected");
