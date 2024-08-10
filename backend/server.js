@@ -29,13 +29,13 @@ const io = require("socket.io")(server, {
 io.on("connection", (socket) => {
 	console.log("connected to websocket");
 	console.log("id", socket.id);
-	socket.on("joinRoom", (roomId) => {
-		socket.join(roomId);
-	});
+
 
 	socket.on("joinRoom", (roomId) => {
 		socket.join(roomId);
+		console.log(`joined room ${roomId}`);
 		socket.on("sendMessage", async ({ Message, RoomId, userId, friendId }) => {
+			console.log(Message);
 			const message = new MessageModel({
 				text: Message,
 				sender: userId,
@@ -43,9 +43,11 @@ io.on("connection", (socket) => {
 			});
 
 			await message.save();
+			// to check whether the roomId is already present 
 			let conversation = await Conversations.findOne({ roomId: roomId });
 			if (conversation) {
 				conversation.messages.push(message);
+				 await conversation.save();
 			} else {
 				const conversation = new Conversations({
 					roomId: roomId,
@@ -55,7 +57,8 @@ io.on("connection", (socket) => {
 				console.log("Message saved:", message);
 				console.log(`from backend ${Message} and roomI ${RoomId} `);
 			}
-			socket.broadcast.emit("receiveMessage", Message);
+				socket.broadcast.emit("receiveMessage", { Message, userId });
+		
 		});
 	});
 	// socket.on("sendMessage", async (data) => {

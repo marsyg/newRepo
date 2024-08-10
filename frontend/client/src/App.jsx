@@ -18,20 +18,20 @@ function App() {
 		socket.on("connect", () => {
 			console.log(socket.id);
 			setId(socket.id);
-    });
+		});
   
 		
-		socket.on("receiveMessage", (msg) => {
-			console.log(msg);
-			setMessages((prevMessages) => [...prevMessages, msg]);
+		socket.on("receiveMessage", ({ Message, userId }) => {
+			console.log(Message);
+		setMessages((prevMessages) => [...prevMessages, { Message, userId }]);
 		});
 
 		socket.on("receive-data", (data) => {
 			console.log(data);
 		});
 		return () => {
-				socket.disconnect();
-			};
+			socket.disconnect();
+		};
 	}, [socket]);
 	const handleJoin = (e) => {
 		e.preventDefault();
@@ -42,13 +42,19 @@ function App() {
 			
 		socket.emit("joinRoom", roomId);
 		console.log(`${userId} joined room with id ${RoomId}`);
-	} 
+	}
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		if (!RoomId) {console.log("room id is not set")
-		} socket.emit("sendMessage", { Message, RoomId, userId, friendId });
-		console.log(`Message sent ${Message} .RoomId -${RoomId} `)
-		console.log("clicked");
+		
+		
+		if (!RoomId) {
+			console.log("room id is not set")
+		} else {
+		socket.emit("sendMessage", { Message, RoomId, userId, friendId });
+		setMessages((prevMessages) => [...prevMessages, { Message, userId }]);
+
+		console.log(`Message sent ${Message} .RoomId -${RoomId} `);
+		console.log("clicked"); } 
 	};
 
 	return (
@@ -62,8 +68,6 @@ function App() {
 						onChange={(e) => setUserId(e.target.value)}
 					/>
 
-					<input type="text" onChange={(e) => setMessage(e.target.value)} />
-					<button type="submit">submit</button>
 					<input
 						type="text"
 						placeholder="friend's-Id"
@@ -74,9 +78,14 @@ function App() {
 					<button type="submit" onClick={handleJoin}>
 						Join
 					</button>
-					<div>
+					<input type="text" onChange={(e) => setMessage(e.target.value)} />
+					<button type="submit">submit</button>
+					<div className= "flex">
 						{messages.map((msg, index) => (
-							<div key={index}>{msg}</div>
+							<div key={index} className={`flex ${msg.userId === userId ? 'flex-start' : 'flex-end'}`}>
+								<p> {msg.Message}</p>
+						
+							</div>
 						))}
 					</div>
 				</form>
