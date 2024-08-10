@@ -2,7 +2,10 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const mongoose = require("mongoose");
-const Message = require("./models/message");
+
+const { MessageModel } = require("./models/message");
+const Conversations = require("./models/conservations");
+
 const User = require("./models/user");
 
 mongoose
@@ -18,55 +21,71 @@ const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
 	cors: {
 		origin: "http://localhost:5173",
-    method: ["GET", "POST"],
-    credentials : true
+		method: ["GET", "POST"],
+		credentials: true,
 	},
 });
 
 io.on("connection", (socket) => {
 	console.log("connected to websocket");
-	console.log("id", socket.id)
-		socket.on("joinRoom", (roomId) => {
-			socket.join(roomId);
-		});
-  socket.emit("welcome", "Welcome from the server");
-	
-	socket.on('joinRoom', (roomId) => { 
+	console.log("id", socket.id);
+	socket.on("joinRoom", (roomId) => {
 		socket.join(roomId);
-		socket.on("message", ({ Message, RoomId }) => {
-			console.log(`from backend ${Message} and roomI ${RoomId} `);
-			socket.broadcast.emit("receiveMessage", Message);
-		});
-	})
-	socket.on("sendMessage", async (data) => {
-		console.log("Received data:", data);
-    const { text, senderId, recipientId } = data.data;
-    
-		
-		console.log(
-			`Text: ${text}, SenderId: ${senderId}, RecipientId: ${recipientId}`
-		);
+	});
 
-		if (!text || !senderId) {
-			console.error("Invalid data received:", data);
-			return;
-		}
-
-		try {
-			const message = new Message({
-				text: text,
-				sender: senderId,
-				recipient: recipientId,
+	socket.on("joinRoom", (roomId) => {
+		socket.join(roomId);
+		socket.on("sendMessage", async ({ Message, RoomId, userId, friendId }) => {
+			const message = new MessageModel({
+				text: Message,
+				sender: userId,
+				recipient: friendId,
 			});
 
 			await message.save();
-			console.log("Message saved:", message);
-
-			io.to(recipientId).emit("receiveMessage", message);
-		} catch (error) {
-			console.error("Error saving message:", error);
-		}
+			let conversation = await Conversations.findOne({ roomId: roomId });
+			if (conversation) {
+				conversation.messages.push(message);
+			} else {
+				const conversation = new Conversations({
+					roomId: roomId,
+					messages: [message],
+				});
+				await conversation.save();
+				console.log("Message saved:", message);
+				console.log(`from backend ${Message} and roomI ${RoomId} `);
+			}
+			socket.broadcast.emit("receiveMessage", Message);
+		});
 	});
+	// socket.on("sendMessage", async (data) => {
+	// 	console.log("Received data:", data);
+	//   const { text, senderId, recipientId } = data.data;
+
+	// 	console.log(
+	// 		`Text: ${text}, SenderId: ${senderId}, RecipientId: ${recipientId}`
+	// 	);
+
+	// 	if (!text || !senderId) {
+	// 		console.error("Invalid data received:", data);
+	// 		return;
+	// 	}
+
+	// 	try {
+	// 		const message = new Message({
+	// 			text: text,
+	// 			sender: senderId,
+	// 			recipient: recipientId,
+	// 		});
+
+	// 		await message.save();
+	// 		console.log("Message saved:", message);
+
+	// 		io.to(recipientId).emit("receiveMessage", message);
+	// 	} catch (error) {
+	// 		console.error("Error saving message:", error);
+	// 	}
+	// });
 
 	// socket.on("message", (message) => {
 	// 	console.log(`Received: ${message}`);

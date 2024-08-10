@@ -46,7 +46,7 @@ function App() {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		if (!RoomId) {console.log("room id is not set")
-		} socket.emit("message", { Message, RoomId });
+		} socket.emit("sendMessage", { Message, RoomId, userId, friendId });
 		console.log(`Message sent ${Message} .RoomId -${RoomId} `)
 		console.log("clicked");
 	};
