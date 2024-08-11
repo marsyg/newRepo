@@ -1,6 +1,8 @@
 import { Container } from "@mui/material";
 import io from "socket.io-client";
 import { useMemo, useState, useEffect } from "react";
+import ChatWindow from "./assets/componnets/chatWindow"
+import FriendCard from "./assets/componnets/friendCard";
 
 function App() {
 	const socket = useMemo(() => {
@@ -59,6 +61,11 @@ function App() {
 
 	return (
 		<>
+			<div className="flex flex-row">
+				<ChatWindow></ChatWindow>
+				<FriendCard></FriendCard>
+			</div>
+
 			<Container>
 				<div>`Welcome ${id}`</div>
 				<form action="" onSubmit={handleSubmit}>
@@ -80,11 +87,15 @@ function App() {
 					</button>
 					<input type="text" onChange={(e) => setMessage(e.target.value)} />
 					<button type="submit">submit</button>
-					<div className= "flex">
+					<div className="flex flex-col justify-start w-80">
 						{messages.map((msg, index) => (
-							<div key={index} className={`flex ${msg.userId === userId ? 'flex-start' : 'flex-end'}`}>
+							<div
+								key={index}
+								className={` ${
+									msg.userId === userId ? "self-start" : "self-end"
+								}`}
+							>
 								<p> {msg.Message}</p>
-						
 							</div>
 						))}
 					</div>
