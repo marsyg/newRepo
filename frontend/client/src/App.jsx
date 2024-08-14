@@ -3,6 +3,9 @@ import io from "socket.io-client";
 import { useMemo, useState, useEffect } from "react";
 import ChatWindow from "./assets/componnets/chatWindow"
 import FriendCard from "./assets/componnets/friendCard";
+import Friendlist from "./assets/componnets/friendlist";
+import LandingPage from "./assets/componnets/landingPage";
+import SignInPage from "./assets/componnets/siginPage";
 
 function App() {
 	const socket = useMemo(() => {
@@ -61,12 +64,13 @@ function App() {
 
 	return (
 		<>
+			{/* <LandingPage></LandingPage>
 			<div className="flex flex-row">
 				<ChatWindow></ChatWindow>
-				<FriendCard></FriendCard>
-			</div>
-
-			<Container>
+				<Friendlist></Friendlist>
+			</div> */}
+<SignInPage></SignInPage>
+			{/* <Container>
 				<div>`Welcome ${id}`</div>
 				<form action="" onSubmit={handleSubmit}>
 					<input
@@ -100,7 +104,7 @@ function App() {
 						))}
 					</div>
 				</form>
-			</Container>
+			</Container> */}
 		</>
 	);
 }
