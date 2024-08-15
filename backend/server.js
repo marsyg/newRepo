@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const mongoose = require("mongoose");
+const axios = require("axios");
 
 const { MessageModel } = require("./models/message");
 const Conversations = require("./models/conservations");
@@ -102,6 +103,9 @@ io.on("connection", (socket) => {
 		console.log("Client disconnected");
 	});
 });
+app.post('/sign-up', () => {
+	
+})
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

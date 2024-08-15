@@ -1,6 +1,42 @@
 import React from 'react'
+import { useState } from 'react';
+import axios from "axios";
 
 function SignInPage() {
+  const [FirstName, setFirstName] = useState("");
+   const [LastName, setLastName] = useState("");
+  const [Email, setEmail] = useState("");
+  const [Password, setPassword] = useState("");
+  const [ConfirmPass, setConfirmPass] = useState("");
+  const [Username, setUsername] = useState("");
+  const SignInHandleSubmit = () => {
+    
+    const SignUpData = {
+      firstName: FirstName,
+      lastName: LastName,
+      email: Email,
+      password: Password,
+      username: Username,
+      
+ }
+
+
+
+    async function signUp() {
+			try {
+				const response = await axios.post(
+					"https://localhost:3000/signup",
+					signUpData
+				);
+				console.log(response.data);
+			} catch (error) {
+				console.error(error.response.data);
+			}
+		}
+
+		signUp();
+  }
+
   return (
 		<div className="flex justify-center items-center bg-green-950  shadow-black shadow-2xl   h-screen w-screen self-center">
 			<div className="flex flex-col bg-white px-7 pb-7 shadow-lg shadow-black rounded-lg hover:scale-105 transition-transform  ">
@@ -19,6 +55,9 @@ function SignInPage() {
 							className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 							placeholder=" "
 							required
+							onChange={(e) => {
+								setEmail(e.target.value);
+							}}
 						/>
 						<label
 							htmlFor="floating_email"
@@ -35,6 +74,9 @@ function SignInPage() {
 							className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 							placeholder=" "
 							required
+							onChange={(e) => {
+								setPassword(e.target.value);
+							}}
 						/>
 						<label
 							htmlFor="floating_password"
@@ -51,6 +93,9 @@ function SignInPage() {
 							className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 							placeholder=" "
 							required
+							onChange={(e) => {
+								setConfirmPass(e.target.value);
+							}}
 						/>
 						<label
 							htmlFor="floating_repeat_password"
@@ -68,6 +113,9 @@ function SignInPage() {
 								className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 								placeholder=" "
 								required
+								onChange={(e) => {
+									setFirstName(e.target.value);
+								}}
 							/>
 							<label
 								htmlFor="floating_first_name"
@@ -84,6 +132,9 @@ function SignInPage() {
 								className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 								placeholder=" "
 								required
+								onChange={(e) => {
+									setLastName(e.target.value);
+								}}
 							/>
 							<label
 								htmlFor="floating_last_name"
@@ -103,6 +154,9 @@ function SignInPage() {
 								className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 								placeholder=" "
 								required
+								onChange={(e) => {
+									setUsername(e.target.value);
+								}}
 							/>
 							<label
 								htmlFor="floating_phone"
