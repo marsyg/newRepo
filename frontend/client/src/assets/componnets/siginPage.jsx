@@ -8,34 +8,39 @@ function SignInPage() {
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
   const [ConfirmPass, setConfirmPass] = useState("");
-  const [Username, setUsername] = useState("");
-  const SignInHandleSubmit = () => {
-    
-    const SignUpData = {
-      firstName: FirstName,
-      lastName: LastName,
-      email: Email,
-      password: Password,
-      username: Username,
-      
- }
+	const [Username, setUsername] = useState("");
+	
+ const SignInHandleSubmit = async () => {
+  const signUpData = {
+    firstName: FirstName,
+    lastName: LastName,
+    email: Email,
+    password: Password,
+    username: Username,
+  };
+
+ 
+  const signUp = async () => {
+    try {
+      const response = await axios.post(
+        "https://localhost:3000/sign-up",
+        signUpData
+      );
+      console.log(response.data); 
+    } catch (error) {
+      console.error(error.response.data); 
+    }
+  };
+
+  
+  await signUp();
+};
 
 
+ 
 
-    async function signUp() {
-			try {
-				const response = await axios.post(
-					"https://localhost:3000/signup",
-					signUpData
-				);
-				console.log(response.data);
-			} catch (error) {
-				console.error(error.response.data);
-			}
-		}
-
-		signUp();
-  }
+		
+  
 
   return (
 		<div className="flex justify-center items-center bg-green-950  shadow-black shadow-2xl   h-screen w-screen self-center">
@@ -44,9 +49,14 @@ function SignInPage() {
 					className="w-full h-10 flex mb-6 font-arialBlack text-2xl bg-green-300  items-center justify-center"
 					htmlFor="title"
 				>
-					ChitChat
+					ChatCentral
 				</label>
-				<form className="max-w-md mx-auto">
+				<form
+					onSubmit={() => {
+						SignInHandleSubmit;
+					}}
+					className="max-w-md mx-auto"
+				>
 					<div className="relative z-0 w-full mb-5 group">
 						<input
 							type="email"

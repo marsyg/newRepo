@@ -1,5 +1,6 @@
 import { Container } from "@mui/material";
 import io from "socket.io-client";
+import LoginPage from "./assets/componnets/loginPage"
 import { useMemo, useState, useEffect } from "react";
 import ChatWindow from "./assets/componnets/chatWindow"
 import FriendCard from "./assets/componnets/friendCard";
@@ -64,13 +65,19 @@ function App() {
 
 	return (
 		<>
-			{/* <LandingPage></LandingPage>
+			<LandingPage></LandingPage>
 			<div className="flex flex-row">
-				<ChatWindow></ChatWindow>
+				<ChatWindow
+					messages={messages}
+					userId={userId}
+					handleSubmit={handleSubmit}
+					setMessage={setMessage}
+				></ChatWindow>
 				<Friendlist></Friendlist>
-			</div> */}
-<SignInPage></SignInPage>
-			{/* <Container>
+			</div>
+			<SignInPage></SignInPage>
+			<LoginPage setUserId={setUserId}></LoginPage>
+			<Container>
 				<div>`Welcome ${id}`</div>
 				<form action="" onSubmit={handleSubmit}>
 					<input
@@ -104,7 +111,7 @@ function App() {
 						))}
 					</div>
 				</form>
-			</Container> */}
+			</Container>
 		</>
 	);
 }

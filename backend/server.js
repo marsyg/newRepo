@@ -3,7 +3,12 @@ const app = express();
 require("dotenv").config();
 const mongoose = require("mongoose");
 const axios = require("axios");
-
+app.use(express.json());
+const {
+	registerUser,
+	authUser,
+	protectedRoute,
+} = require("./auth/authControllers");
 const { MessageModel } = require("./models/message");
 const Conversations = require("./models/conservations");
 
@@ -31,7 +36,6 @@ io.on("connection", (socket) => {
 	console.log("connected to websocket");
 	console.log("id", socket.id);
 
-
 	socket.on("joinRoom", (roomId) => {
 		socket.join(roomId);
 		console.log(`joined room ${roomId}`);
@@ -44,11 +48,11 @@ io.on("connection", (socket) => {
 			});
 
 			await message.save();
-			// to check whether the roomId is already present 
+			// to check whether the roomId is already present
 			let conversation = await Conversations.findOne({ roomId: roomId });
 			if (conversation) {
 				conversation.messages.push(message);
-				 await conversation.save();
+				await conversation.save();
 			} else {
 				const conversation = new Conversations({
 					roomId: roomId,
@@ -58,8 +62,7 @@ io.on("connection", (socket) => {
 				console.log("Message saved:", message);
 				console.log(`from backend ${Message} and roomI ${RoomId} `);
 			}
-				socket.broadcast.emit("receiveMessage", { Message, userId });
-		
+			socket.broadcast.emit("receiveMessage", { Message, userId });
 		});
 	});
 	// socket.on("sendMessage", async (data) => {
@@ -103,9 +106,10 @@ io.on("connection", (socket) => {
 		console.log("Client disconnected");
 	});
 });
-app.post('/sign-up', () => {
-	
-})
+
+app.post("/sign-up", registerUser);
+app.post("/login", authUser);
+app.get("/chat",protectedRoute)
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
