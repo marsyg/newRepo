@@ -3,12 +3,23 @@ const app = express();
 require("dotenv").config();
 const mongoose = require("mongoose");
 const axios = require("axios");
+const cors = require("cors");
+const { v4: uuidv4 } = require("uuid");
+
 app.use(express.json());
+const corsOptions = {
+	origin: ["http://localhost:5173", "https://localhost:5173"],
+	methods: ["GET", "POST", "PUT", "DELETE"],
+	allowedHeaders: ["Content-Type", "Authorization"],
+	credentials: true,
+};
+
 const {
 	registerUser,
 	authUser,
 	protectedRoute,
 } = require("./auth/authControllers");
+
 const { MessageModel } = require("./models/message");
 const Conversations = require("./models/conservations");
 
@@ -26,21 +37,48 @@ mongoose
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
 	cors: {
-		origin: "http://localhost:5173",
+		origin: ["http://localhost:5173", "https://localhost:5173"],
 		method: ["GET", "POST"],
 		credentials: true,
 	},
 });
-
+const connectedUsers = {};
 io.on("connection", (socket) => {
 	console.log("connected to websocket");
 	console.log("id", socket.id);
+	socket.on("online", (data) => {
+		    const userId = uuidv4(); // Generate a unique userId
+				const userName = data.userName;
 
+				// Attach the generated userId and socketId to the user data
+				const userData = {
+					userId: userId,
+					userName: userName,
+					socketId: data.socketId,
+				};
+
+				// Store connected user's info
+				connectedUsers[userName] = userData;
+				console.log(`User ${userName} is online with ID: ${userId}`);
+
+			
+				socket.broadcast.emit("user-online", userData);
+
+		});
+	socket.on("join-request", (user) => {
+		console.log(user.socketId)
+		console.log("request sent ")
+		io.to(user.socketId).emit('invitation', user)
+	})
+	socket.on('createRoom', (roomId) => {
+		console.log(`room created with id ${roomId}`)
+		socket.join(roomId)
+	})
 	socket.on("joinRoom", (roomId) => {
 		socket.join(roomId);
 		console.log(`joined room ${roomId}`);
 		socket.on("sendMessage", async ({ Message, RoomId, userId, friendId }) => {
-			console.log(Message);
+			console.log(userId, Message);
 			const message = new MessageModel({
 				text: Message,
 				sender: userId,
@@ -62,54 +100,21 @@ io.on("connection", (socket) => {
 				console.log("Message saved:", message);
 				console.log(`from backend ${Message} and roomI ${RoomId} `);
 			}
+			
 			socket.broadcast.emit("receiveMessage", { Message, userId });
 		});
 	});
-	// socket.on("sendMessage", async (data) => {
-	// 	console.log("Received data:", data);
-	//   const { text, senderId, recipientId } = data.data;
-
-	// 	console.log(
-	// 		`Text: ${text}, SenderId: ${senderId}, RecipientId: ${recipientId}`
-	// 	);
-
-	// 	if (!text || !senderId) {
-	// 		console.error("Invalid data received:", data);
-	// 		return;
-	// 	}
-
-	// 	try {
-	// 		const message = new Message({
-	// 			text: text,
-	// 			sender: senderId,
-	// 			recipient: recipientId,
-	// 		});
-
-	// 		await message.save();
-	// 		console.log("Message saved:", message);
-
-	// 		io.to(recipientId).emit("receiveMessage", message);
-	// 	} catch (error) {
-	// 		console.error("Error saving message:", error);
-	// 	}
-	// });
-
-	// socket.on("message", (message) => {
-	// 	console.log(`Received: ${message}`);
-
-	// 	const response = `Data received: ${message}`;
-	// 	console.log(`Sending response: ${response}`);
-	// 	io.emit("data", response);
-	// });
-
+	
 	socket.on("disconnect", () => {
 		console.log("Client disconnected");
 	});
 });
 
 app.post("/sign-up", registerUser);
-app.post("/login", authUser);
-app.get("/chat",protectedRoute)
+app.post("/login", authUser, () => {
+	console.log("reached here login");
+});
+app.get("/chat", protectedRoute);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

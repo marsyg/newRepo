@@ -36,6 +36,7 @@ const registerUser = async (req, res) => {
 
 const authUser = async (req, res) => {
 	const { username, password } = req.body;
+	console.log(username, password);
 	const user = await User.findOne({ username });
 	if (user && (await user.matchPassword({ password }))) {
 		res.json({
@@ -49,7 +50,7 @@ const authUser = async (req, res) => {
 			message: "Invalid username or password",
 		});
 	}
-};
+};																																																																										
 const protectedRoute = async (req, res, next) => {
 	const bearerHeader = req.headers.authorization;
 	const bearer = bearerHeader.split(" ");

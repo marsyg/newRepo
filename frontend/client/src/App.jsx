@@ -1,12 +1,14 @@
 import { Container } from "@mui/material";
 import io from "socket.io-client";
-import LoginPage from "./assets/componnets/loginPage"
+import LoginPage from "./assets/componnets/loginPage";
 import { useMemo, useState, useEffect } from "react";
-import ChatWindow from "./assets/componnets/chatWindow"
+import ChatWindow from "./assets/componnets/chatWindow";
 import FriendCard from "./assets/componnets/friendCard";
 import Friendlist from "./assets/componnets/friendlist";
 import LandingPage from "./assets/componnets/landingPage";
-import SignInPage from "./assets/componnets/siginPage";
+import OnlineFriends from "./assets/componnets/onlineFriends";
+import SignInPage from "./siginPage";
+import Invitation from "./assets/componnets/Invitation";
 
 function App() {
 	const socket = useMemo(() => {
@@ -17,7 +19,7 @@ function App() {
 	const [Message, setMessage] = useState("");
 	const [userId, setUserId] = useState("");
 	const [friendId, setFriendId] = useState("");
-
+	const [userName, setUserName] = useState(" ");
 	const [messages, setMessages] = useState([]);
 
 	useEffect(() => {
@@ -25,11 +27,9 @@ function App() {
 			console.log(socket.id);
 			setId(socket.id);
 		});
-  
-		
 		socket.on("receiveMessage", ({ Message, userId }) => {
-			console.log(Message);
-		setMessages((prevMessages) => [...prevMessages, { Message, userId }]);
+			console.log(`Message received ${Message} from ${userId}`);
+			setMessages((prevMessages) => [...prevMessages, { Message, userId }]);
 		});
 
 		socket.on("receive-data", (data) => {
@@ -45,27 +45,41 @@ function App() {
 		console.log(roomId);
 		console.log(RoomId);
 		setRoomId(roomId);
-			
+
 		socket.emit("joinRoom", roomId);
 		console.log(`${userId} joined room with id ${RoomId}`);
-	}
+	};
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		
-		
-		if (!RoomId) {
-			console.log("room id is not set")
-		} else {
+
 		socket.emit("sendMessage", { Message, RoomId, userId, friendId });
 		setMessages((prevMessages) => [...prevMessages, { Message, userId }]);
 
 		console.log(`Message sent ${Message} .RoomId -${RoomId} `);
-		console.log("clicked"); } 
+		console.log("clicked");
 	};
 
 	return (
 		<>
-			<LandingPage></LandingPage>
+			<Invitation
+				setFriendId={setFriendId}
+				setUserId={setUserId}
+				setRoomId={setRoomId}
+				socket={socket}
+			></Invitation>
+			<OnlineFriends
+				setFriendId={setFriendId}
+				setUserId={setUserId}
+				userName={userName}
+				socket={socket}
+				setRoomId={setRoomId}
+			></OnlineFriends>
+			<LandingPage
+				setUserName={setUserName}
+				socket={socket}
+				setUserId={setUserId}
+				userId={userId}
+			></LandingPage>
 			<div className="flex flex-row">
 				<ChatWindow
 					messages={messages}
