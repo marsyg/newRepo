@@ -51,7 +51,7 @@ function App() {
 	};
 	const handleSubmit = (e) => {
 		e.preventDefault();
-
+        console.log(userId,"UserID has been set")
 		socket.emit("sendMessage", { Message, RoomId, userId, friendId });
 		setMessages((prevMessages) => [...prevMessages, { Message, userId }]);
 
@@ -63,13 +63,13 @@ function App() {
 		<>
 			<Invitation
 				setFriendId={setFriendId}
-				setUserId={setUserId}
+				
 				setRoomId={setRoomId}
 				socket={socket}
 			></Invitation>
 			<OnlineFriends
 				setFriendId={setFriendId}
-				setUserId={setUserId}
+				
 				userName={userName}
 				socket={socket}
 				setRoomId={setRoomId}
@@ -77,7 +77,7 @@ function App() {
 			<LandingPage
 				setUserName={setUserName}
 				socket={socket}
-				setUserId={setUserId}
+				setUserId={setUserId}//userID has been set here 
 				userId={userId}
 			></LandingPage>
 			<div className="flex flex-row">

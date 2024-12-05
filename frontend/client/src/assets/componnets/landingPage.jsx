@@ -41,6 +41,7 @@ function LandingPage({ setUserId, userId, socket, setUserName,  }) {
 							onChange={(e) => {
 								setUser(e.target.value);
 								setUserName(e.target.value);
+								setUserId(e.target.value);// userId has been set
 							}}
 							placeholder="enter your username "
 							type="text"

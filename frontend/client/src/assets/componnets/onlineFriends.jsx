@@ -3,11 +3,12 @@ import { Card, Dropdown } from "flowbite-react";
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import { useEffect, useState } from "react";
 // addUserName
+//userName is the client's name 
 function OnlineFriends({
 	socket,
 	userName,
 	setFriendId,
-	setUserId,
+	
 	setRoomId,
 }) {
 	const [onlineUser, setOnlineUsers] = useState([]);
@@ -18,11 +19,12 @@ function OnlineFriends({
 		console.log("add friend clicked");
 		const newUser = {
 			...user,
-			senderName: userName,
+			senderName: userName,//request sender 
 			senderSocketId: socket.id,
 		};
-		setUserId(newUser.senderName);
+        //make them join the room 
 		console.log(newUser,"inside request handle")
+
 		setFriendId(newUser.userName);
 		const roomId = [newUser.userName, newUser.senderName].sort().join("-");
 		console.log(roomId)
