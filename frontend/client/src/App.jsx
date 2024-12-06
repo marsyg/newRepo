@@ -51,7 +51,9 @@ function App() {
 	};
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		
         console.log(userId,"UserID has been set")
+		console.log(RoomId,"roomID has been set")
 		socket.emit("sendMessage", { Message, RoomId, userId, friendId });
 		setMessages((prevMessages) => [...prevMessages, { Message, userId }]);
 
