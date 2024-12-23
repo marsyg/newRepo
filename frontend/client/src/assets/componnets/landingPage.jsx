@@ -1,14 +1,19 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
-function LandingPage({ setUserId, userId, socket, setUserName,  }) {
-	const [onlineUser, setOnlineUsers] = useState([]);
+// eslint-disable-next-line react/prop-types
+function LandingPage({ setUserId, userId, socket, setUserName, onlineUser ,updateOnlineUser  }) {
+	console.log("setOnlineUser:-", typeof updateOnlineUser);
+
 	const [user, setUser] = useState("");
 	const handleOnJoin = () => {
-		console.log("clicked");
+		console.log("clicked on join server");
 
 		socket.emit("online", { userName: user, socketId: socket.id });
+		
 		socket.on("user-online", (data) => {
-			setOnlineUsers((prev) => [...prev, data]);
+			console.log("inside online users")
+			updateOnlineUser((prev) => [...prev, data]);
 			console.log(`User ${userId} is online`);
 		});
 	};

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { useState, useEffect } from "react";
 import { Card, Dropdown } from "flowbite-react";

@@ -2,6 +2,7 @@ import React from "react";
 import FriendCard from "./friendCard";
 
 function Friendlist() {
+	console.log("list has been loaded")
 	return (
 		<div className="flex flex-col  h-screen w-2/6 p-3">
 			<div className="text-4xl font-mono h-16	 w-full top-0 "> Chats</div>

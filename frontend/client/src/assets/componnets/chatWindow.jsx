@@ -1,8 +1,11 @@
 import React from 'react'
+import Friendlist from './friendlist';
+import FriendCard from './friendCard';
 
 function ChatWindow({ messages, userId, handleSubmit, setMessage }) {
 	return (
-		<div className="flex flex-col h-screen  w-3/4">
+		<div className='flex flex-row'>
+			<div className="flex flex-col h-screen  w-3/4">
 			<div className="flex bg-black w-full top-0 h-28 p-2	items-center  flex-row">
 				<div className="text-white w-12 h-12 mr-7 rounded-full bg-slate-200">
 					Photo
@@ -39,6 +42,9 @@ function ChatWindow({ messages, userId, handleSubmit, setMessage }) {
 					Send
 				</button>
 			</div>
+		</div>
+		<Friendlist></Friendlist>
+		
 		</div>
 	);
 }

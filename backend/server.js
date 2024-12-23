@@ -60,10 +60,9 @@
 					// Store connected user's info
 					connectedUsers[userName] = userData;
 					console.log(`User ${userName} is online with ID: ${userId}`);
-
+					socket.emit("user-online", userData);
+				    
 				
-					socket.broadcast.emit("user-online", userData);
-
 			});
 		socket.on("join-request", (user) => {
 			console.log(user.socketId)
